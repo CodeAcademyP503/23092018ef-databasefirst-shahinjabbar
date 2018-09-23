@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="BankDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Cards">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OwnerName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Summary" Type="int" Nullable="false" />
+          <Property Name="GivenDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="Owner_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Customers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Surname" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="passportnumber" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'BankDb.dbo.udv_showtotalsummary' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="udv_showtotalsummary">
+          <Key>
+            <PropertyRef Name="Ownername" />
+          </Key>
+          <Property Name="Ownername" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="totalamount" Type="int" />
+        </EntityType>
+        <Association Name="FK__Cards__Owner_Id__3D5E1FD2">
+          <End Role="Customers" Type="Self.Customers" Multiplicity="1" />
+          <End Role="Cards" Type="Self.Cards" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Cards">
+              <PropertyRef Name="Owner_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="usp_AddCustomers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="name" Type="nvarchar" Mode="In" />
+          <Parameter Name="surname" Type="nvarchar" Mode="In" />
+          <Parameter Name="pasnumber" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_Givecredit" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="name" Type="nvarchar" Mode="In" />
+          <Parameter Name="sum" Type="int" Mode="In" />
+          <Parameter Name="datetimes" Type="smalldatetime" Mode="In" />
+          <Parameter Name="ownerid" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="BankDbModelStoreContainer">
+          <EntitySet Name="Cards" EntityType="Self.Cards" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Customers" EntityType="Self.Customers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="udv_showtotalsummary" EntityType="Self.udv_showtotalsummary" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [udv_showtotalsummary].[Ownername] AS [Ownername], 
+    [udv_showtotalsummary].[totalamount] AS [totalamount]
+    FROM [dbo].[udv_showtotalsummary] AS [udv_showtotalsummary]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK__Cards__Owner_Id__3D5E1FD2" Association="Self.FK__Cards__Owner_Id__3D5E1FD2">
+            <End Role="Customers" EntitySet="Customers" />
+            <End Role="Cards" EntitySet="Cards" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="BankDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Card">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OwnerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Summary" Type="Int32" Nullable="false" />
+          <Property Name="GivenDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Owner_Id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK__Cards__Owner_Id__3D5E1FD2" FromRole="Cards" ToRole="Customers" />
+        </EntityType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Surname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Cards" Relationship="Self.FK__Cards__Owner_Id__3D5E1FD2" FromRole="Customers" ToRole="Cards" />
+          <Property Name="passportnumber" Type="Int32" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__Cards__Owner_Id__3D5E1FD2">
+          <End Role="Customers" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Cards" Type="Self.Card" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Cards">
+              <PropertyRef Name="Owner_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BankDbEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Cards" EntityType="Self.Card" />
+          <EntitySet Name="Customers" EntityType="Self.Customer" />
+          <AssociationSet Name="FK__Cards__Owner_Id__3D5E1FD2" Association="Self.FK__Cards__Owner_Id__3D5E1FD2">
+            <End Role="Customers" EntitySet="Customers" />
+            <End Role="Cards" EntitySet="Cards" />
+          </AssociationSet>
+          <FunctionImport Name="usp_AddCustomers">
+            <Parameter Name="name" Mode="In" Type="String" />
+            <Parameter Name="surname" Mode="In" Type="String" />
+            <Parameter Name="pasnumber" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_Givecredit">
+            <Parameter Name="name" Mode="In" Type="String" />
+            <Parameter Name="sum" Mode="In" Type="Int32" />
+            <Parameter Name="datetimes" Mode="In" Type="DateTime" />
+            <Parameter Name="ownerid" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="udv_showtotalsummary" EntityType="BankDbModel.udv_showtotalsummary" />
+        </EntityContainer>
+        <EntityType Name="udv_showtotalsummary">
+          <Key>
+            <PropertyRef Name="Ownername" />
+          </Key>
+          <Property Name="Ownername" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="totalamount" Type="Int32" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="BankDbModelStoreContainer" CdmEntityContainer="BankDbEntities">
+          <EntitySetMapping Name="Cards">
+            <EntityTypeMapping TypeName="BankDbModel.Card">
+              <MappingFragment StoreEntitySet="Cards">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="OwnerName" ColumnName="OwnerName" />
+                <ScalarProperty Name="Summary" ColumnName="Summary" />
+                <ScalarProperty Name="GivenDate" ColumnName="GivenDate" />
+                <ScalarProperty Name="Owner_Id" ColumnName="Owner_Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Customers">
+            <EntityTypeMapping TypeName="BankDbModel.Customer">
+              <MappingFragment StoreEntitySet="Customers">
+                <ScalarProperty Name="passportnumber" ColumnName="passportnumber" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Surname" ColumnName="Surname" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="usp_AddCustomers" FunctionName="BankDbModel.Store.usp_AddCustomers" />
+          <FunctionImportMapping FunctionImportName="usp_Givecredit" FunctionName="BankDbModel.Store.usp_Givecredit" />
+          <EntitySetMapping Name="udv_showtotalsummary">
+            <EntityTypeMapping TypeName="BankDbModel.udv_showtotalsummary">
+              <MappingFragment StoreEntitySet="udv_showtotalsummary">
+                <ScalarProperty Name="totalamount" ColumnName="totalamount" />
+                <ScalarProperty Name="Ownername" ColumnName="Ownername" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
